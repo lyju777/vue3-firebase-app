@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <div class="text-h4">about</div>
-  </div>
+  <router-view></router-view>
 </template>
 
 <script setup></script>
@@ -10,5 +8,5 @@
 
 <route lang="yaml">
 meta:
-  layout: admin
+layout: admin
 </route>
