@@ -1,22 +1,18 @@
 <template>
-  <q-page padding>
-    <BaseCard>
+  <q-dialog persistent v-bind="$attrs" @hide="onHide">
+    <q-card :style="{ width: '660px' }">
       <q-toolbar>
         <q-toolbar-title>글쓰기</q-toolbar-title>
+        <q-btn v-close-popup flat round dense icon="close"></q-btn>
       </q-toolbar>
       <q-separator></q-separator>
       <PostForm
         v-model:title="form.title"
         v-model:category="form.category"
         v-model:content="form.content"
-      >
-        <template #actions>
-          <q-btn flat label="취소" v-close-popup />
-          <q-btn type="submit" flat label="수정" color="primary" />
-        </template>
-      </PostForm>
-    </BaseCard>
-  </q-page>
+      />
+    </q-card>
+  </q-dialog>
 </template>
 <script>
 const getInitialForm = () => ({
@@ -28,14 +24,14 @@ const getInitialForm = () => ({
 </script>
 <script setup>
 import { ref } from 'vue';
-import BaseCard from 'src/components/base/BaseCard.vue';
-import PostForm from 'src/components/apps/post/PostForm.vue';
+// import { getCategories } from 'src/service/category';
+import PostForm from './PostForm.vue';
 
 const form = ref(getInitialForm());
+
+const onHide = () => {
+  form.value = getInitialForm();
+};
 </script>
 
 <style lang="scss" scoped></style>
-<route lang="yaml">
-meta:
-  width: 800px
-</route>

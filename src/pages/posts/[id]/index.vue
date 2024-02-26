@@ -1,14 +1,20 @@
 <template>
-  <div>
-    <div class="text-h4">게시글 상세</div>
-    <ul>
-      <li>
-        <router-link to="/posts/1/edit">수정하기</router-link>
-      </li>
-    </ul>
-  </div>
+  <q-page padding>
+    <PostDetails />
+
+    <q-separator class="q-my-xl"></q-separator>
+
+    <PostComments />
+  </q-page>
 </template>
 
-<script setup></script>
+<script setup>
+import PostDetails from './components/PostDetails.vue';
+import PostComments from './components/PostComments.vue';
+</script>
 
 <style lang="scss" scoped></style>
+<route lang="yaml">
+meta:
+  width: 800px
+</route>
