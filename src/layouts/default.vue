@@ -52,9 +52,19 @@
             />
           </q-avatar>
           <q-menu>
-            <q-list style="min-width: 100px">
-              <q-item clickable v-close-popup to="/mypage/profile">
+            <q-list style="min-width: 140px">
+              <q-item
+                v-if="authStore.user.emailVerified"
+                clickable
+                v-close-popup
+                to="/mypage/profile"
+              >
                 <q-item-section>프로필</q-item-section>
+              </q-item>
+              <q-item v-else clickable v-close-popup>
+                <q-item-section class="text-red" @click="varifyEmail"
+                  >이메일을 인증해주세요.</q-item-section
+                >
               </q-item>
               <q-item clickable v-close-popup @click="handleLogout">
                 <q-item-section>로그아웃</q-item-section>
@@ -76,9 +86,16 @@
 import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from 'src/stores/auth';
-import { logout, generateDefaultPhotoURL } from 'src/service';
+import {
+  logout,
+  generateDefaultPhotoURL,
+  sendVerificationEmail,
+} from 'src/service';
 
 import AuthDialog from 'src/pages/components/auth/AuthDialog.vue';
+import { useQuasar } from 'quasar';
+
+const $q = useQuasar();
 
 const authStore = useAuthStore();
 
@@ -97,5 +114,11 @@ const openAuthDialog = () => {
 
 const handleLogout = async () => {
   await logout();
+  $q.notify('로그아웃 되었습니다.');
+};
+
+const varifyEmail = () => {
+  sendVerificationEmail();
+  $q.notify('이메일을 확인해주세요!');
 };
 </script>

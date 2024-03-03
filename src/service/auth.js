@@ -1,9 +1,12 @@
 import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
+  sendEmailVerification,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
+  updatePassword,
   updateProfile,
 } from 'firebase/auth';
 import { auth } from 'src/boot/firebase';
@@ -28,7 +31,7 @@ export async function signUpWithEmail({ email, password, nickname }) {
     displayName: nickname,
     photoURL: generateDefaultPhotoURL(user.uid),
   });
-  console.log('user', user);
+  sendVerificationEmail();
 }
 
 export function generateDefaultPhotoURL(uid) {
@@ -39,4 +42,16 @@ export function generateDefaultPhotoURL(uid) {
 export async function signInWithEmail({ email, password }) {
   const { user } = await signInWithEmailAndPassword(auth, email, password);
   return user;
+}
+
+export async function sendPasswordReset(email) {
+  await sendPasswordResetEmail(auth, email);
+}
+
+export async function updateUserPassword(newPassword) {
+  await updatePassword(auth.currentUser, newPassword);
+}
+
+export async function sendVerificationEmail() {
+  await sendEmailVerification(auth.currentUser);
 }

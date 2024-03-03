@@ -6,7 +6,6 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!user.value);
 
   const setUser = userData => {
-    console.log('userData', userData);
     user.value = userData;
     if (userData) {
       user.value = {
@@ -14,6 +13,7 @@ export const useAuthStore = defineStore('auth', () => {
         photoURL: userData.photoURL,
         displayName: userData.displayName,
         email: userData.email,
+        emailVerified: userData.emailVerified,
       };
     } else {
       user.value = null;
