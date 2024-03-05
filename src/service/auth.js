@@ -6,6 +6,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
+  updateEmail,
   updatePassword,
   updateProfile,
 } from 'firebase/auth';
@@ -54,4 +55,14 @@ export async function updateUserPassword(newPassword) {
 
 export async function sendVerificationEmail() {
   await sendEmailVerification(auth.currentUser);
+}
+
+export async function updateUserProfile(displayName) {
+  await updateProfile(auth.currentUser, {
+    displayName,
+  });
+}
+
+export async function updateUserEmail(email) {
+  await updateEmail(auth.currentUser, email);
 }
