@@ -46,6 +46,7 @@
         class="full-width"
         unelevated
         color="primary"
+        :loading="isLoading"
       ></q-btn>
 
       <q-separator></q-separator>
@@ -71,6 +72,8 @@ import {
   validatePassword,
   validatePasswordConfirm,
 } from 'src/utils/valideate-rules';
+import { useAsyncState } from '@vueuse/core';
+import { getErrorMessage } from 'src/utils/firebase/error-message';
 
 const passwordConfirm = ref('');
 
@@ -78,18 +81,35 @@ const emit = defineEmits(['changeView', 'closeDialog']);
 
 const $q = useQuasar();
 
+const { isLoading, execute } = useAsyncState(signUpWithEmail, null, {
+  immediate: false,
+  onSuccess: () => {
+    $q.notify('가입을 환영합니다. :)');
+    $q.notify('이메일에서 인증 링크를 확인해주세요.');
+    emit('closeDialog');
+  },
+  onError: err => {
+    $q.notify({
+      type: 'negative',
+      message: getErrorMessage(err.code),
+    });
+  },
+});
+
 const form = ref({
   nickname: '',
   email: '',
   password: '',
 });
 
-const hadleSubmit = async () => {
-  await signUpWithEmail(form.value);
-  $q.notify('가입을 환영합니다. :)');
-  $q.notify('이메일에서 인증 링크를 확인해주세요.');
-  emit('closeDialog');
-};
+const hadleSubmit = () => execute(1000, form.value);
+
+// const hadleSubmit = async () => {
+//   await signUpWithEmail(form.value);
+//   $q.notify('가입을 환영합니다. :)');
+//   $q.notify('이메일에서 인증 링크를 확인해주세요.');
+//   emit('closeDialog');
+// };
 </script>
 
 <style lang="scss" scoped></style>
