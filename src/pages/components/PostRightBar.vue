@@ -26,40 +26,33 @@
             dense
             input-style="font-size: 12px"
             placeholder="태그로 검색해보세요."
+            @keypress.enter.prevent="addTag"
           />
           <div class="q-gutter-sm q-pb-sm">
             <q-btn
+              v-for="(tag, index) in tags"
+              :key="tag"
               size="10px"
               padding="2px 4px 2px 7px"
               color="grey-3"
               text-color="dark"
               unelevated
+              @click="removeTag(index)"
             >
-              vuejs
-              <q-icon name="clear" size="12px" color="grey" unelevated></q-icon
-            ></q-btn>
-
-            <q-btn
-              size="10px"
-              padding="2px 4px 2px 7px"
-              color="grey-3"
-              text-color="dark"
-              unelevated
-            >
-              react
+              {{ tag }}
               <q-icon name="clear" size="12px" color="grey" unelevated></q-icon
             ></q-btn>
           </div>
         </q-card>
       </q-card-section>
       <q-list padding>
-        <q-item v-for="tag in tags" :key="tag.name" clickable dense>
+        <q-item clickable dense @click="addTag('vuejs')">
           <q-item-section side class="text-teal text-caption">
-            #{{ tag.name }}
+            #vuejs
           </q-item-section>
           <q-space></q-space>
           <q-item-section side class="text-teal text-caption">
-            {{ tag.count }}
+            10
           </q-item-section>
         </q-item>
       </q-list>
@@ -68,18 +61,24 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, toRef } from 'vue';
 import StickySideBar from 'src/components/StickySideBar.vue';
+import { useTag } from 'src/composables/useTag';
 
-defineEmits(['openWriteDialog']);
+const props = defineProps({
+  tags: {
+    type: Array,
+    default: () => [],
+  },
+});
 
-const tags = ref([
-  { name: 'vue.js', count: 10 },
-  { name: 'react', count: 8 },
-  { name: 'angular', count: 7 },
-  { name: 'html', count: 3 },
-  { name: 'css', count: 1 },
-]);
+const emit = defineEmits(['openWriteDialog', 'update:tags']);
+
+const { addTag, removeTag } = useTag({
+  tags: toRef(props, 'tags'),
+  updateTags: tags => emit('update:tags', tags),
+  maxLengthMessage: '태그는 10개 이상 등록할 수 없습니다!',
+});
 </script>
 
 <style lang="scss" scoped></style>

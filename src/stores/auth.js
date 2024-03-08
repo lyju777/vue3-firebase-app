@@ -8,6 +8,7 @@ export const useAuthStore = defineStore('auth', () => {
     serializer: StorageSerializers.object,
   });
   const isAuthenticated = computed(() => !!user.value);
+  const uid = computed(() => user.value?.uid || null);
 
   const setUser = userData => {
     user.value = userData;
@@ -25,6 +26,7 @@ export const useAuthStore = defineStore('auth', () => {
   };
   return {
     user,
+    uid,
     isAuthenticated,
     setUser,
   };
