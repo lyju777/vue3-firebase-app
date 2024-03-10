@@ -8,6 +8,7 @@
         dense
         color="grey"
         size="16px"
+        @click="$router.back()"
       ></q-btn>
       <q-space></q-space>
       <q-btn
@@ -33,7 +34,9 @@
       </q-avatar>
       <div class="q-ml-md">
         <div>짐코딩</div>
-        <div class="text-grey-6">3일전</div>
+        <div class="text-grey-6">
+          {{ date.formatDate(post.createdAt, 'YYYY. MM. DD HH:mm:ss') }}
+        </div>
       </div>
       <q-space></q-space>
       <q-btn icon="more_horiz" round flat>
@@ -54,37 +57,36 @@
       </q-btn>
     </div>
 
-    <div class="q-mt-md text-h5 text-weight-bold">제목입니다.</div>
+    <div class="q-mt-md text-h5 text-weight-bold">{{ post.title }}</div>
+    <div class="text-teal">
+      <span v-for="tag in post.tags" :key="tag">#{{ tag }}&nbsp;</span>
+      {{ post.category }}
+    </div>
     <div class="row items-center q-gutter-x-md q-mt-md justify-end">
-      <postIcon name="sym_o_visibility" label="1" tooltip="조회수" />
-      <postIcon name="sym_o_sms" label="2" tooltip="댓글수" />
-      <postIcon name="sym_o_favorite" label="3" tooltip="좋아요" />
-      <postIcon name="sym_o_bookmark" label="4" tooltip="북마크" />
+      <postIcon name="sym_o_visibility" :label="post.readCount" />
+      <postIcon name="sym_o_sms" :label="post.commentCount" />
+      <postIcon name="sym_o_favorite" :label="post.likeCount" />
+      <postIcon name="sym_o_bookmark" :label="post.bookmarkCount" />
     </div>
     <q-separator class="q-my-lg"></q-separator>
-    <div>
-      Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugiat atque
-      nulla iste? Quos facere magni error est possimus omnis fugiat numquam
-      earum et. Nisi ipsa, voluptates illum labore dignissimos at? <br />
-      Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugiat atque
-      nulla iste? Quos facere magni error est possimus omnis fugiat numquam
-      earum et. Nisi ipsa, voluptates illum labore dignissimos at? <br />
-      Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugiat atque
-      nulla iste? Quos facere magni error est possimus omnis fugiat numquam
-      earum et. Nisi ipsa, voluptates illum labore dignissimos at? <br />
-      Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugiat atque
-      nulla iste? Quos facere magni error est possimus omnis fugiat numquam
-      earum et. Nisi ipsa, voluptates illum labore dignissimos at? <br />
-      Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugiat atque
-      nulla iste? Quos facere magni error est possimus omnis fugiat numquam
-      earum et. Nisi ipsa, voluptates illum labore dignissimos at? <br />
-    </div>
+    <TiptapViewer v-if="post.content" :content="post.content" />
   </BaseCard>
 </template>
 
 <script setup>
+import { useAsyncState } from '@vueuse/core';
+import { date } from 'quasar';
 import postIcon from 'src/components/apps/post/postIcon.vue';
 import BaseCard from 'src/components/base/BaseCard.vue';
+import TiptapViewer from 'src/pages/components/tiptap/TiptapViewer.vue';
+import { getPost_ } from 'src/service';
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
+const { state: post, error } = useAsyncState(
+  () => getPost_(route.params.id),
+  {},
+);
 </script>
 
 <style lang="scss" scoped></style>

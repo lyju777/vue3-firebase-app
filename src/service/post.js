@@ -6,6 +6,9 @@ import {
   getDocs,
   query,
   where,
+  orderBy,
+  getDoc,
+  doc,
 } from 'firebase/firestore';
 
 export async function createPost(data) {
@@ -51,6 +54,10 @@ export async function getPost(params) {
     conditions.push(where('tags', 'array-contains-any', params?.tags));
   }
 
+  if (params?.sort) {
+    conditions.push(orderBy(params.sort, 'desc'));
+  }
+
   const q = query(collection(db, 'posts'), ...conditions);
   const querySnapshot = await getDocs(q);
   const posts = querySnapshot.docs.map(docs => {
@@ -62,4 +69,19 @@ export async function getPost(params) {
     };
   });
   return posts;
+}
+
+export async function getPost_(id) {
+  const docSnap = await getDoc(doc(db, 'posts', id));
+
+  if (!docSnap.exists()) {
+    throw new Error('No such document!');
+  }
+
+  const data = docSnap.data();
+
+  return {
+    ...data,
+    createdAt: data.createdAt?.toDate(),
+  };
 }

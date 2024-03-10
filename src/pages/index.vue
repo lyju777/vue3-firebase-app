@@ -3,7 +3,7 @@
     <div class="row q-col-gutter-x-lg">
       <PostLeftBar class="col-grow" v-model:category="params.category" />
       <section class="col-7">
-        <PostHeader />
+        <PostHeader v-model:sort="params.sort" />
         <PostList :items="posts" />
       </section>
       <PostRightBar
@@ -12,7 +12,10 @@
         v-model:tags="params.tags"
       />
     </div>
-    <PostWriteDialog v-model="postDialog" />
+    <PostWriteDialog
+      v-model="postDialog"
+      @complate="complateRegistrationPost"
+    />
   </q-page>
 </template>
 
@@ -32,26 +35,28 @@ const router = useRouter();
 const params = ref({
   category: null,
   tags: [],
+  sort: 'createdAt',
 });
 // const goPostDetails = id => router.push(`/posts/${id}`);
 
 const { state: posts, execute } = useAsyncState(getPost, [], {
+  immediate: false,
   throwError: true,
 });
 
-watch(
-  params,
-  () => {
-    execute(0, params.value);
-  },
-  {
-    deep: true,
-  },
-);
+watch(params, () => execute(0, params.value), {
+  deep: true,
+  immediate: true,
+});
 
 const postDialog = ref(false);
 const openWriteDialog = () => {
   postDialog.value = true;
+};
+
+const complateRegistrationPost = () => {
+  postDialog.value = false;
+  execute(0, params.value);
 };
 </script>
 
