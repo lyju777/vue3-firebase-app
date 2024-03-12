@@ -9,21 +9,45 @@
       <div class="flex text-caption">
         <span>짐코딩</span>
         <span class="q-mx-xs">&middot;</span>
-        <span class="text-grey-6">3일 전</span>
+        <span class="text-grey-6">{{
+          date.formatDate(createdAt, 'YYYY. MM. DD HH:mm:ss')
+        }}</span>
       </div>
       <div class="q-mt-sm">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi
-        blanditiis reiciendis officiis molestiae nulla perferendis, atque quod
-        architecto suscipit ducimus corporis id, ea quidem. Aspernatur vitae
-        voluptate vel minima consequuntur.
+        {{ message }}
       </div>
     </q-item-section>
     <q-item-section side top>
-      <q-btn flat color="grey" icon="sym_o_delete" round dense></q-btn>
+      <q-btn
+        flat
+        color="grey"
+        icon="sym_o_delete"
+        round
+        dense
+        @click="$emit('delete', id)"
+      ></q-btn>
     </q-item-section>
   </q-item>
 </template>
 
-<script setup></script>
+<script setup>
+import { date } from 'quasar';
+
+defineProps({
+  id: {
+    type: String,
+  },
+  message: {
+    type: String,
+  },
+  createdAt: {
+    type: Date,
+  },
+  uid: {
+    type: String,
+  },
+});
+defineEmits(['delete']);
+</script>
 
 <style lang="scss" scoped></style>
