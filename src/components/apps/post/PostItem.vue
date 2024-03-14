@@ -7,11 +7,7 @@
     </q-item-section>
     <q-item-section>
       <div class="flex items-center">
-        <span
-          >닉네임 &middot;&nbsp;{{
-            date.formatDate(createdAt, 'YY/MM/DD HH:mm:ss ')
-          }}</span
-        >
+        <span>닉네임 &middot;&nbsp;{{ formatRelativeTime(createdAt) }}</span>
         <q-chip class="q-ml-sm" color="primary" text-color="white">
           {{ category }}
         </q-chip>
@@ -66,6 +62,7 @@
 <script setup>
 import { date } from 'quasar';
 import postIcon from './postIcon.vue';
+import { formatRelativeTime } from 'src/utils/relative-time-format';
 
 defineProps({
   id: {

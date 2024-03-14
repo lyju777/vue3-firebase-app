@@ -1,15 +1,16 @@
 <template>
   <q-page padding>
     <div class="row q-col-gutter-x-lg">
-      <PostLeftBar class="col-grow" v-model:category="params.category" />
+      <PostLeftBar class="col-grow" v-model:category="category" />
       <section class="col-7">
-        <PostHeader v-model:sort="params.sort" />
-        <PostList :items="posts" />
+        <PostHeader v-model:sort="sort" />
+        <PostList :items="items" />
+        <div v-intersection-observer="handleIntersectionObserver"></div>
       </section>
       <PostRightBar
         class="col-3"
         @open-write-dialog="openWriteDialog"
-        v-model:tags="params.tags"
+        v-model:tags="tags"
       />
     </div>
     <PostWriteDialog
@@ -20,8 +21,8 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed, ref, watch } from 'vue';
+import { vIntersectionObserver } from '@vueuse/components';
 
 import PostList from 'src/components/apps/post/PostList.vue';
 import PostHeader from './components/PostHeader.vue';
@@ -30,24 +31,45 @@ import PostRightBar from './components/PostRightBar.vue';
 import PostWriteDialog from 'src/components/apps/post/PostWriteDialog.vue';
 import { getPost } from 'src/service';
 import { useAsyncState } from '@vueuse/core';
+import { usePostQuery } from 'src/composables/usePostQuery';
 
-const router = useRouter();
-const params = ref({
-  category: null,
-  tags: [],
-  sort: 'createdAt',
-});
-// const goPostDetails = id => router.push(`/posts/${id}`);
+const { category, sort, tags } = usePostQuery();
 
-const { state: posts, execute } = useAsyncState(getPost, [], {
+const params = computed(() => ({
+  category: category.value,
+  tags: tags.value,
+  sort: sort.value,
+  limit: 5,
+}));
+
+const items = ref([]);
+const start = ref(null);
+const isLoadMore = ref(true);
+
+const { execute } = useAsyncState(getPost, [], {
   immediate: false,
   throwError: true,
+  onSuccess: result => {
+    if (start.value) {
+      items.value = items.value.concat(result.items);
+    } else {
+      items.value = result.items;
+    }
+    isLoadMore.value = result.items.length >= params.value.limit;
+    start.value = result.lastItem;
+  },
 });
 
-watch(params, () => execute(0, params.value), {
-  deep: true,
-  immediate: true,
-});
+watch(
+  params,
+  () => {
+    start.value = null;
+    execute(0, params.value);
+  },
+  {
+    deep: true,
+  },
+);
 
 const postDialog = ref(false);
 const openWriteDialog = () => {
@@ -56,7 +78,19 @@ const openWriteDialog = () => {
 
 const complateRegistrationPost = () => {
   postDialog.value = false;
+  start.value = null;
   execute(0, params.value);
+};
+
+const loadMore = () => {
+  execute(0, { ...params.value, start: start.value });
+};
+
+const handleIntersectionObserver = ([{ isIntersecting }]) => {
+  if (isIntersecting && isLoadMore.value) {
+    console.log('### handleIntersectionObserver ###');
+    loadMore();
+  }
 };
 </script>
 

@@ -11,6 +11,8 @@ import {
   doc,
   updateDoc,
   deleteDoc,
+  startAfter,
+  limit,
 } from 'firebase/firestore';
 
 export async function createPost(data) {
@@ -28,26 +30,7 @@ export async function createPost(data) {
 
 export async function getPost(params) {
   console.log('###params:', params);
-  // 1) 컬렉션에 있는 모든 문서 조회
 
-  // const querySnapshot = await getDocs(collection(db, 'posts'));
-  // // const posts = [];
-  // // querySnapshot.forEach(docs => {
-  // //   // docs.data() is never undefined for query doc snapshots
-  // //   console.log(docs.id, ' => ', docs.data());
-  // //   posts.push(docs.data());
-  // // });
-  // const posts = querySnapshot.docs.map(docs => {
-  //   const data = docs.data();
-  //   return {
-  //     ...data,
-  //     id: docs.id,
-  //     createdAt: data.createdAt?.toDate(),
-  //   };
-  // });
-  // console.log(posts);
-
-  // 1) 컬렉션에 있는 문서를 쿼리해서 조회
   const conditions = [];
   if (params?.category) {
     conditions.push(where('category', '==', params?.category));
@@ -60,6 +43,14 @@ export async function getPost(params) {
     conditions.push(orderBy(params.sort, 'desc'));
   }
 
+  if (params?.start) {
+    conditions.push(startAfter(params.start));
+  }
+
+  if (params?.limit) {
+    conditions.push(limit(params.limit));
+  }
+
   const q = query(collection(db, 'posts'), ...conditions);
   const querySnapshot = await getDocs(q);
   const posts = querySnapshot.docs.map(docs => {
@@ -70,7 +61,11 @@ export async function getPost(params) {
       createdAt: data.createdAt?.toDate(),
     };
   });
-  return posts;
+  const latesDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+  return {
+    items: posts,
+    lastItem: latesDoc,
+  };
 }
 
 export async function getPost_(id) {
