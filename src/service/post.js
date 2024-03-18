@@ -13,6 +13,7 @@ import {
   deleteDoc,
   startAfter,
   limit,
+  setDoc,
 } from 'firebase/firestore';
 
 export async function createPost(data) {
@@ -92,4 +93,27 @@ export async function updatePost(id, data) {
 
 export async function deletePost(id) {
   await deleteDoc(doc(db, 'posts', id));
+}
+
+/**
+ *  1) 게시글 좋아요
+ *  2) 게시글 좋아요 취소
+ *  3) 게시글 좋아요 조회
+ */
+
+export async function addLike(uid, postId) {
+  await setDoc(doc(db, 'post_likes', `${uid}_${postId}`), {
+    uid,
+    postId,
+    createdAt: serverTimestamp(),
+  });
+}
+
+export async function removeLike(uid, postId) {
+  await deleteDoc(doc(db, 'post_likes', `${uid}_${postId}`));
+}
+
+export async function hasLike(uid, postId) {
+  const docSnap = await getDoc(doc(db, 'post_likes', `${uid}_${postId}`));
+  return docSnap.exists();
 }

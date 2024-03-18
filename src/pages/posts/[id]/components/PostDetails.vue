@@ -12,12 +12,13 @@
       ></q-btn>
       <q-space></q-space>
       <q-btn
-        icon="sym_o_favorite"
+        :icon="isLike ? 'favorite' : 'sym_o_favorite'"
         flat
         round
         dense
         color="red"
         size="16px"
+        @click="toggleLike"
       ></q-btn>
       <q-btn
         icon="sym_o_bookmark"
@@ -39,7 +40,7 @@
         </div>
       </div>
       <q-space></q-space>
-      <q-btn icon="more_horiz" round flat>
+      <q-btn v-if="hasOwnContent(post.uid)" icon="more_horiz" round flat>
         <q-menu>
           <q-list style="min-width: 100px">
             <q-item
@@ -65,7 +66,7 @@
     <div class="row items-center q-gutter-x-md q-mt-md justify-end">
       <postIcon name="sym_o_visibility" :label="post.readCount" />
       <postIcon name="sym_o_sms" :label="post.commentCount" />
-      <postIcon name="sym_o_favorite" :label="post.likeCount" />
+      <postIcon name="sym_o_favorite" :label="likeCount" />
       <postIcon name="sym_o_bookmark" :label="post.bookmarkCount" />
     </div>
     <q-separator class="q-my-lg"></q-separator>
@@ -78,16 +79,22 @@ import { useAsyncState } from '@vueuse/core';
 import { date, useQuasar } from 'quasar';
 import postIcon from 'src/components/apps/post/postIcon.vue';
 import BaseCard from 'src/components/base/BaseCard.vue';
+import { useLike } from 'src/composables/useLike';
 import TiptapViewer from 'src/pages/components/tiptap/TiptapViewer.vue';
 import { deletePost, getPost_ } from 'src/service';
+import { useAuthStore } from 'src/stores/auth';
 import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
 const $q = useQuasar();
+const { hasOwnContent } = useAuthStore();
 const { state: post, error } = useAsyncState(
   () => getPost_(route.params.id),
   {},
+  {
+    onSuccess: result => updateLickCount(result.likeCount),
+  },
 );
 
 const { execute: executeDeletePost } = useAsyncState(deletePost, null, {
@@ -103,6 +110,10 @@ const handleDeletePost = async () => {
   }
   await executeDeletePost(0, route.params.id);
 };
+
+const { isLike, likeCount, toggleLike, updateLickCount } = useLike(
+  route.params.id,
+);
 </script>
 
 <style lang="scss" scoped></style>

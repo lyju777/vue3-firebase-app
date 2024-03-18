@@ -32,8 +32,10 @@ import PostWriteDialog from 'src/components/apps/post/PostWriteDialog.vue';
 import { getPost } from 'src/service';
 import { useAsyncState } from '@vueuse/core';
 import { usePostQuery } from 'src/composables/usePostQuery';
+import { useAuthStore } from 'src/stores/auth';
 
 const { category, sort, tags } = usePostQuery();
+const authStore = useAuthStore();
 
 const params = computed(() => ({
   category: category.value,
@@ -73,6 +75,10 @@ watch(
 
 const postDialog = ref(false);
 const openWriteDialog = () => {
+  if (!authStore.isAuthenticated) {
+    alert('로그인 후 이용 가능합니다.');
+    return;
+  }
   postDialog.value = true;
 };
 
