@@ -1,5 +1,5 @@
 <template>
-  <q-item class="bg-white q-pt-md" clickable :to="`posts/${item.id}`">
+  <q-item class="bg-white q-pt-md" clickable :to="`/posts/${item.id}`">
     <q-item-section avatar top>
       <q-avatar>
         <img src="https://cdn.quasar.dev/img/boy-avatar.png" alt="" />
@@ -53,10 +53,15 @@
         </div>
         <div class="col-3">
           <div class="flex flex-center">
-            <q-btn class="full-width" flat dense @click.prevent>
+            <q-btn
+              class="full-width"
+              flat
+              dense
+              @click.prevent="toggleBookmark"
+            >
               <postIcon
-                name="sym_o_bookmark"
-                :label="item.bookmarkCount"
+                :name="isBookmark ? 'bookmark' : 'sym_o_bookmark'"
+                :label="bookmarkCount"
                 tooltip="북마크"
               />
             </q-btn>
@@ -75,6 +80,7 @@ import { storeToRefs } from 'pinia';
 import { toRef, ref, toRefs, watch } from 'vue';
 import { addLike, hasLike, removeLike } from 'src/service';
 import { useLike } from 'src/composables/useLike';
+import { useBookmark } from 'src/composables/useBookmark';
 
 const props = defineProps({
   item: {
@@ -88,6 +94,13 @@ const { uid, isAuthenticated } = storeToRefs(useAuthStore());
 const { isLike, likeCount, toggleLike } = useLike(props.item.id, {
   initialCount: props.item.likeCount,
 });
+
+const { isBookmark, bookmarkCount, toggleBookmark } = useBookmark(
+  props.item.id,
+  {
+    initialCount: props.item.likeCount,
+  },
+);
 </script>
 
 <style lang="scss" scoped></style>

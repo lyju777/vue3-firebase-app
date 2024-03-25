@@ -75,13 +75,14 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import { useAsyncState } from '@vueuse/core';
 import { date, useQuasar } from 'quasar';
 import postIcon from 'src/components/apps/post/postIcon.vue';
 import BaseCard from 'src/components/base/BaseCard.vue';
 import { useLike } from 'src/composables/useLike';
 import TiptapViewer from 'src/pages/components/tiptap/TiptapViewer.vue';
-import { deletePost, getPost_ } from 'src/service';
+import { deletePost, getPostDetails } from 'src/service';
 import { useAuthStore } from 'src/stores/auth';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -89,11 +90,16 @@ const route = useRoute();
 const router = useRouter();
 const $q = useQuasar();
 const { hasOwnContent } = useAuthStore();
-const { state: post, error } = useAsyncState(
-  () => getPost_(route.params.id),
+
+const post = ref({});
+const { error } = useAsyncState(
+  () => getPostDetails(route.params.id),
   {},
   {
-    onSuccess: result => updateLickCount(result.likeCount),
+    onSuccess: result => {
+      post.value = result.post;
+      updateLickCount(result.post.likeCount);
+    },
   },
 );
 
