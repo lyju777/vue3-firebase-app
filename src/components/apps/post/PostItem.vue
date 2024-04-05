@@ -8,9 +8,11 @@
     <q-item-section>
       <div class="flex items-center">
         <span
-          >닉네임 &middot;&nbsp;{{ formatRelativeTime(item.createdAt) }}</span
+          >닉네임&nbsp;&middot;&nbsp;{{
+            formatRelativeTime(item.createdAt)
+          }}</span
         >
-        <q-chip class="q-ml-sm" color="primary" text-color="white">
+        <q-chip class="q-ml-md" dense color="primary" text-color="white">
           {{ item.category }}
         </q-chip>
       </div>
@@ -24,7 +26,7 @@
       <div class="row items-center">
         <div class="col-3">
           <div class="flex flex-center">
-            <postIcon
+            <PostIcon
               name="sym_o_visibility"
               :label="item.readCount"
               tooltip="조회수"
@@ -33,7 +35,7 @@
         </div>
         <div class="col-3">
           <div class="flex flex-center">
-            <postIcon
+            <PostIcon
               name="sym_o_sms"
               :label="item.commentCount"
               tooltip="댓글수"
@@ -43,7 +45,7 @@
         <div class="col-3">
           <div class="flex flex-center">
             <q-btn class="full-width" flat dense @click.prevent="toggleLike">
-              <postIcon
+              <PostIcon
                 :name="isLike ? 'favorite' : 'sym_o_favorite'"
                 :label="likeCount"
                 tooltip="좋아요"
@@ -59,7 +61,7 @@
               dense
               @click.prevent="toggleBookmark"
             >
-              <postIcon
+              <PostIcon
                 :name="isBookmark ? 'bookmark' : 'sym_o_bookmark'"
                 :label="bookmarkCount"
                 tooltip="북마크"
@@ -73,15 +75,14 @@
 </template>
 
 <script setup>
-import { useAuthStore } from 'src/stores/auth';
-import postIcon from './postIcon.vue';
 import { formatRelativeTime } from 'src/utils/relative-time-format';
-import { storeToRefs } from 'pinia';
-import { toRef, ref, toRefs, watch } from 'vue';
-import { addLike, hasLike, removeLike } from 'src/service';
+import PostIcon from './postIcon.vue';
+
 import { useLike } from 'src/composables/useLike';
 import { useBookmark } from 'src/composables/useBookmark';
-
+import { useAuthStore } from 'src/stores/auth';
+import { storeToRefs } from 'pinia';
+import { ref, toRef, toRefs, watch } from 'vue';
 const props = defineProps({
   item: {
     type: Object,
@@ -94,11 +95,10 @@ const { uid, isAuthenticated } = storeToRefs(useAuthStore());
 const { isLike, likeCount, toggleLike } = useLike(props.item.id, {
   initialCount: props.item.likeCount,
 });
-
 const { isBookmark, bookmarkCount, toggleBookmark } = useBookmark(
   props.item.id,
   {
-    initialCount: props.item.likeCount,
+    initialCount: props.item.bookmarkCount,
   },
 );
 </script>
