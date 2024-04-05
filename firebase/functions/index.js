@@ -1,19 +1,99 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * const {onCall} = require("firebase-functions/v2/https");
- * const {onDocumentWritten} = require("firebase-functions/v2/firestore");
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
+// The Cloud Functions for Firebase SDK to create Cloud Functions and triggers.
+const { logger } = require('firebase-functions');
+const {
+  onDocumentCreated,
+  onDocumentDeleted,
+} = require('firebase-functions/v2/firestore');
 
-const {onRequest} = require("firebase-functions/v2/https");
-const logger = require("firebase-functions/logger");
+// The Firebase Admin SDK to access Firestore.
+const { initializeApp, cert } = require('firebase-admin/app');
+const { getFirestore, FieldValue } = require('firebase-admin/firestore');
+const serviceAccount = require('./serviceAccountKey.json');
 
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
+const app = initializeApp({
+  credential: cert(serviceAccount),
+});
+const db = getFirestore(app);
+const region = 'asia-northeast3';
 
-// exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+exports.onCreateBookmark = onDocumentCreated(
+  {
+    region,
+    document: 'users/{uid}/bookmarks/{postId}',
+  },
+  event => {
+    const postId = event.params.postId;
+    db.doc(`posts/${postId}`).update({
+      bookmarkCount: FieldValue.increment(1),
+    });
+  },
+);
+
+exports.onDeleteBookmark = onDocumentDeleted(
+  {
+    region,
+    document: 'users/{uid}/bookmarks/{postId}',
+  },
+  event => {
+    const postId = event.params.postId;
+    db.doc(`posts/${postId}`).update({
+      bookmarkCount: FieldValue.increment(-1),
+    });
+  },
+);
+
+exports.onCreatedComment = onDocumentCreated(
+  {
+    region,
+    document: 'posts/{postId}/comments/{commentId}',
+  },
+  event => {
+    const postId = event.params.postId;
+    db.doc(`posts/${postId}`).update({
+      commentCount: FieldValue.increment(1),
+    });
+  },
+);
+
+exports.onDeleteComment = onDocumentDeleted(
+  {
+    region,
+    document: 'posts/{postId}/comments/{commentId}',
+  },
+  event => {
+    const postId = event.params.postId;
+    db.doc(`posts/${postId}`).update({
+      commentCount: FieldValue.increment(-1),
+    });
+  },
+);
+
+exports.onCreatedLike = onDocumentCreated(
+  {
+    region,
+    document: 'post_likes/{id}',
+  },
+  event => {
+    const snapshot = event.data;
+    const data = snapshot.data();
+    logger.log('data:', data);
+    db.doc(`posts/${data.postId}`).update({
+      likeCount: FieldValue.increment(1),
+    });
+  },
+);
+
+exports.onDeleteLike = onDocumentDeleted(
+  {
+    region,
+    document: 'post_likes/{id}',
+  },
+  event => {
+    const snapshot = event.data;
+    const data = snapshot.data();
+    logger.log('data:', data);
+    db.doc(`posts/${data.postId}`).update({
+      likeCount: FieldValue.increment(-1),
+    });
+  },
+);

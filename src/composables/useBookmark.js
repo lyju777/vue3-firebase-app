@@ -4,14 +4,14 @@ import { useAuthStore } from 'src/stores/auth';
 import { addBookmark, hasBookmark, removeBookmark } from 'src/service';
 
 export const useBookmark = (id, options) => {
-  const { initialCount } = options || {};
+  const { initialCount = 0 } = options || {};
   const { uid, isAuthenticated } = storeToRefs(useAuthStore());
 
   const isBookmark = ref(false);
   const bookmarkCount = ref(initialCount);
   const postId = ref(id);
 
-  const initLick = async () => {
+  const initBookmark = async () => {
     if (isAuthenticated.value === false) {
       isBookmark.value = false;
       return;
@@ -34,12 +34,12 @@ export const useBookmark = (id, options) => {
     isBookmark.value = !isBookmark.value;
   };
 
-  watch(isAuthenticated, () => initLick(), { immediate: true });
+  watch(isAuthenticated, () => initBookmark(), { immediate: true });
 
   return {
     isBookmark,
     bookmarkCount: readonly(bookmarkCount),
-    updateLickCount: count => (bookmarkCount.value = count),
+    updateBookmarkCount: count => (bookmarkCount.value = count),
     toggleBookmark,
   };
 };
