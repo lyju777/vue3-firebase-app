@@ -1,5 +1,6 @@
 // The Cloud Functions for Firebase SDK to create Cloud Functions and triggers.
-const { logger } = require('firebase-functions');
+const functions = require('firebase-functions');
+// const { logger } = require('firebase-functions');
 const {
   onDocumentCreated,
   onDocumentDeleted,
@@ -7,9 +8,13 @@ const {
 
 // The Firebase Admin SDK to access Firestore.
 const { initializeApp, cert } = require('firebase-admin/app');
-const { getFirestore, FieldValue } = require('firebase-admin/firestore');
+const {
+  getFirestore,
+  FieldValue,
+  Timestamp,
+} = require('firebase-admin/firestore');
 const serviceAccount = require('./serviceAccountKey.json');
-
+const { logger } = functions;
 const app = initializeApp({
   credential: cert(serviceAccount),
 });
@@ -97,3 +102,36 @@ exports.onDeleteLike = onDocumentDeleted(
     });
   },
 );
+
+exports.onCreateUser = functions
+  .region(region)
+  .auth.user()
+  .onCreate(user => {
+    logger.log(user);
+    // users / save
+    const isPasswordProvider = user.providerData.some(
+      userInfo => userInfo.providerId === 'password',
+    );
+    const defaultPhotoURL = `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${user.uid}`;
+    const displayName = isPasswordProvider
+      ? user.email.split('@')[0]
+      : user.displayName;
+
+    const photoURL = isPasswordProvider ? defaultPhotoURL : user.photoURL;
+
+    db.doc(`users/${user.uid}`).set({
+      email: user.email,
+      displayName,
+      photoURL,
+      createdAt: Timestamp.fromDate(new Date(user.metadata.creationTime)),
+    });
+  });
+
+exports.onDeleteUser = functions
+  .region(region)
+  .auth.user()
+  .onDelete(user => {
+    logger.log(user);
+    // users / remove
+    db.doc(`users/${user.uid}`).delete();
+  });

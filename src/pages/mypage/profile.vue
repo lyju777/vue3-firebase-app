@@ -52,8 +52,8 @@ import { useQuasar } from 'quasar';
 import BaseCard from 'src/components/base/BaseCard.vue';
 import { updateUserEmail, updateUserProfile } from 'src/service';
 import { useAuthStore } from 'src/stores/auth';
+import { getErrorMessage } from 'src/utils/firebase/error-message';
 import { ref, watchEffect } from 'vue';
-
 const authStore = useAuthStore();
 const $q = useQuasar();
 
@@ -66,6 +66,7 @@ const { isLoading: isLoadingProfile, execute: executeProfile } = useAsyncState(
       $q.notify('프로필 수정 완료!');
     },
     onError: err => {
+      console.log(err.message);
       $q.notify({
         type: 'negative',
         message: getErrorMessage(err.code),

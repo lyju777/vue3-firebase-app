@@ -2,14 +2,14 @@
   <div>
     <div class="text-h5 text-center text-weight-bold q-mb-xl">회원가입</div>
     <q-form class="q-gutter-y-md" @submit.prevent="hadleSubmit">
-      <q-input
+      <!-- <q-input
         v-model="form.nickname"
         placeholder="닉네임"
         outlined
         dense
         :rules="[validateRequired]"
         hide-bottom-space
-      ></q-input>
+      ></q-input> -->
       <q-input
         v-model="form.email"
         placeholder="이메일"
