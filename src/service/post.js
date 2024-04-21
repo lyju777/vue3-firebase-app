@@ -16,6 +16,7 @@ import {
   setDoc,
   increment,
 } from 'firebase/firestore';
+import { getUserById } from './user';
 
 export async function createPost(data) {
   const docRef = await addDoc(collection(db, 'posts'), {
@@ -92,9 +93,11 @@ async function incrementReadCount(id) {
 
 export async function getPostDetails(id) {
   await incrementReadCount(id);
-  const post = await getPost_(id);
+  const post = await getPost_(id); // post.uid
+  const postUser = await getUserById(post.uid);
   return {
     post,
+    postUser,
   };
 }
 
@@ -158,4 +161,15 @@ export async function getUserBookmarks(uid) {
   return Promise.all(
     querySnapshot.docs.map(bookmarkDoc => getPost_(bookmarkDoc.id)),
   );
+}
+
+export async function getTags() {
+  const q = query(
+    collection(db, 'tags'),
+    where('count', '>', 0),
+    orderBy('count', 'desc'),
+  );
+  const querySnapshot = await getDocs(q);
+
+  return querySnapshot.docs.map(docu => docu.data());
 }

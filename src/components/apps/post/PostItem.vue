@@ -2,16 +2,14 @@
   <q-item class="bg-white q-pt-md" clickable :to="`/posts/${item.id}`">
     <q-item-section avatar top>
       <q-avatar>
-        <img src="https://cdn.quasar.dev/img/boy-avatar.png" alt="" />
+        <img :src="postUser?.photoURL" alt="" />
       </q-avatar>
     </q-item-section>
     <q-item-section>
       <div class="flex items-center">
-        <span
-          >닉네임&nbsp;&middot;&nbsp;{{
-            formatRelativeTime(item.createdAt)
-          }}</span
-        >
+        <span>{{ postUser?.displayName }}</span>
+        <span class="q-mx-xs">&middot;</span>
+        <span>{{ formatRelativeTime(item.createdAt) }}</span>
         <q-chip class="q-ml-md" dense color="primary" text-color="white">
           {{ item.category }}
         </q-chip>
@@ -83,6 +81,8 @@ import { useBookmark } from 'src/composables/useBookmark';
 import { useAuthStore } from 'src/stores/auth';
 import { storeToRefs } from 'pinia';
 import { ref, toRef, toRefs, watch } from 'vue';
+import { useAsyncState } from '@vueuse/core';
+import { getUserById } from 'src/service';
 const props = defineProps({
   item: {
     type: Object,
@@ -100,6 +100,11 @@ const { isBookmark, bookmarkCount, toggleBookmark } = useBookmark(
   {
     initialCount: props.item.bookmarkCount,
   },
+);
+
+const { state: postUser } = useAsyncState(
+  () => getUserById(props.item.uid),
+  {},
 );
 </script>
 

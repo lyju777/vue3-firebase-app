@@ -32,10 +32,10 @@
     </div>
     <div class="flex items-center">
       <q-avatar>
-        <img src="https://cdn.quasar.dev/img/avatar.png" />
+        <img :src="postUser?.photoURL" />
       </q-avatar>
       <div class="q-ml-md">
-        <div>짐코딩</div>
+        <div>{{ postUser?.displayName }}</div>
         <div class="text-grey-6">
           {{ date.formatDate(post.createdAt, 'YYYY. MM. DD HH:mm:ss') }}
         </div>
@@ -94,12 +94,14 @@ const $q = useQuasar();
 const { hasOwnContent } = useAuthStore();
 
 const post = ref({});
+const postUser = ref({});
 const { error } = useAsyncState(
   () => getPostDetails(route.params.id),
   {},
   {
     onSuccess: result => {
       post.value = result.post;
+      postUser.value = result.postUser;
       updateLikeCount(result.post.likeCount);
       updateBookmarkCount(result.post.bookmarkCount);
     },
