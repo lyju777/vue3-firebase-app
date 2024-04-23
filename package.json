@@ -22,13 +22,16 @@
     "@tiptap/vue-3": "^2.2.4",
     "@vueuse/components": "^10.9.0",
     "@vueuse/core": "^10.9.0",
+    "algoliasearch": "^4.23.3",
     "axios": "^1.6.7",
     "browser-image-resizer": "^2.4.1",
     "firebase": "^10.8.1",
+    "instantsearch.css": "^8.1.0",
     "pinia": "^2.1.3",
     "quasar": "^2.12.0",
     "uuid": "^9.0.1",
     "vue": "^3.3.4",
+    "vue-instantsearch": "^4.16.0",
     "vue-router": "^4.2.2"
   },
   "devDependencies": {
