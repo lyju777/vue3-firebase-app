@@ -67,7 +67,7 @@ module.exports = configure(function (/* ctx */) {
       // ignorePublicFolder: true,
       // minify: false,
       // polyfillModulePreload: true,
-      // distDir
+      distDir: 'firebase/dist',
 
       // extendViteConf (viteConf) {},
       // viteVuePluginOptions: {},

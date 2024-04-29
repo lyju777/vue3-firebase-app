@@ -5,5 +5,27 @@ service cloud.firestore {
     match /{document=**} {
       allow read, write: if true;
     }
+    function isAuth(){
+    return request.auth.uid != null;
+    }
+
+    function isAuthorOrAdmin(authorDataUid){
+    return authorDataUid == request.auth.uid || isAdmin();
+    }
+
+    function isAdmin(){
+    return request.auth.uid != null && get(/databases/$(database)/documents/user/$(request.auth.uid)).data.rule == 'admin'
+    }
+
+    function allowUpdateFields(fields){
+    return (request.response.data.diff(resource.data).affectedKeys().hasOnly(fields));
+    }
+
+    match /posts/{postId}{
+     allow read: if true;
+     allow create: if isAuth();
+     allow delete: if isAuthorOrAdmin(resource.data.uid);
+     allow update: if allowUpdateFields(['readCount']) || isAuthorOrAdmin(resource.data.uid);
+   }
   }
 }
