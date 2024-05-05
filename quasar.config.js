@@ -102,6 +102,7 @@ module.exports = configure(function (/* ctx */) {
     framework: {
       config: {
         notify: { position: 'top' },
+        loadingBar: { color: 'primary' },
       },
 
       // iconSet: 'material-icons', // Quasar icon set
@@ -115,7 +116,7 @@ module.exports = configure(function (/* ctx */) {
       // directives: [],
 
       // Quasar plugins
-      plugins: ['Notify'],
+      plugins: ['Notify', 'LoadingBar'],
     },
 
     // animations: 'all', // --- includes all animations

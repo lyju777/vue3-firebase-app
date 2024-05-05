@@ -5,9 +5,10 @@
         v-model="titleModel"
         outlined
         placeholder="제목"
-        hide-bottom-space
         :rules="[validateRequired]"
-      ></q-input>
+        counter
+        maxlength="40"
+      />
       <q-select
         v-model="categoryModel"
         outlined
@@ -26,10 +27,10 @@
       <TiptapEditor v-model="contentModel" />
       <q-input
         outlined
-        placeholder="태그를 입력해주세요. (입력후 Enter)"
+        placeholder="태그를 입력해주세요~! (입력 후 Enter)"
         prefix="#"
         @keypress.enter.prevent="addTag"
-      ></q-input>
+      />
       <q-chip
         v-for="(tag, index) in tags"
         :key="tag"
@@ -38,10 +39,11 @@
         color="teal"
         removable
         @remove="removeTag(index)"
-        >{{ tag }}</q-chip
       >
+        {{ tag }}
+      </q-chip>
     </q-card-section>
-    <q-separator></q-separator>
+    <q-separator />
     <q-card-actions align="right">
       <slot name="actions">
         <q-btn flat label="취소하기" v-close-popup />
@@ -59,11 +61,11 @@
 
 <script setup>
 import { ref, computed, toRef } from 'vue';
+import { useQuasar } from 'quasar';
+import { useTag } from 'src/composables/useTag';
 import { getCategories } from 'src/service/category';
 import { validateRequired } from 'src/utils/valideate-rules';
 import TiptapEditor from 'src/pages/components/tiptap/TiptapEditor.vue';
-import { useQuasar } from 'quasar';
-import { useTag } from 'src/composables/useTag';
 
 const props = defineProps({
   title: {
@@ -99,12 +101,10 @@ const titleModel = computed({
   get: () => props.title,
   set: val => emit('update:title', val),
 });
-
 const categoryModel = computed({
   get: () => props.category,
   set: val => emit('update:category', val),
 });
-
 const contentModel = computed({
   get: () => props.content,
   set: val => emit('update:content', val),
@@ -113,14 +113,14 @@ const contentModel = computed({
 const { addTag, removeTag } = useTag({
   tags: toRef(props, 'tags'),
   updateTags: tags => emit('update:tags', tags),
-  maxLengthMessage: '태그는 10개 이상 등록할 수 없습니다!',
+  maxLengthMessage: '태그는 10개 이상 등록할 수 없습니다.',
 });
 
 const categories = getCategories();
 
 const handleSubmit = () => {
   if (!contentModel.value) {
-    $q.notify('내용을 작성 하세요.');
+    $q.notify('내용을 작성하세요.');
     return;
   }
   emit('submit');

@@ -5,7 +5,9 @@
         <q-btn flat dense to="/">
           <q-toolbar-title>
             <q-avatar>
-              <img src="/public/image.jpg" />
+              <img
+                :src="`https://firebasestorage.googleapis.com/v0/b/vue3-firevbase-app.appspot.com/o/image.jpg?alt=media&token=${variable}`"
+              />
             </q-avatar>
             FE_기록하는 습관
           </q-toolbar-title>
@@ -15,22 +17,15 @@
         <q-btn
           stretch
           flat
-          label="수강하기"
-          href="https://google.com"
+          label="깃허브"
+          href="https://github.com/lyju777"
           target="_blank"
         />
         <q-btn
           stretch
           flat
-          label="온라인 강의"
-          href="https://edu.gymcoding.co"
-          target="_blank"
-        />
-        <q-btn
-          stretch
-          flat
-          label="유튜브"
-          href="https://youtube.com/@gymcoding"
+          label="블로그"
+          href="https://velog.io/@lyju777/posts"
           target="_blank"
         />
         <q-separator vertical class="q-my-md q-mr-md" />
@@ -94,6 +89,9 @@ import {
 
 import AuthDialog from 'src/pages/components/auth/AuthDialog.vue';
 import { useQuasar } from 'quasar';
+
+// top bar profile image
+const variable = import.meta.env.VITE_TOP_PROFILE_IMAGE;
 
 const $q = useQuasar();
 

@@ -1,6 +1,7 @@
 <template>
   <q-page padding>
     <ais-instant-search :search-client="searchClient" index-name="dev_posts">
+      <ais-configure :hits-per-page.camel="8" />
       <div class="row q-col-gutter-x-lg">
         <section class="col-3">
           <q-card flat bordered class="q-pa-md">
@@ -22,17 +23,16 @@
         </section>
         <section class="col-9">
           <ais-search-box />
-          <q-separator spaced />
+          <q-separator class="q-my-md" />
+
           <ais-hits :transform-items="transformItems">
             <template v-slot="{ items }">
-              <template v-for="item in items" :key="item.id">
-                <PostItem :item="item" />
-              </template>
+              <PostList :items="items" />
             </template>
           </ais-hits>
 
           <div class="pagination flex flex-center q-mt-md">
-            <ais-pagination></ais-pagination>
+            <ais-pagination />
           </div>
         </section>
       </div>
@@ -43,14 +43,14 @@
 <script setup>
 import algoliasearch from 'algoliasearch/lite';
 import 'instantsearch.css/themes/algolia-min.css';
-import PostItem from 'src/components/apps/post/PostItem.vue';
-
+import PostList from 'src/components/apps/post/PostList.vue';
 const searchClient = algoliasearch(
-  '0XXSJ1OXU8',
-  'ecb14e42ffc4b2ab8faf6899e08632b7',
+  'HWHYYT2AD2',
+  'f688863368d338d6cf4e619c32c3097a',
 );
 
 const transformItems = items => {
+  console.log('items: ', items);
   return items.map(item => ({
     id: item.objectID,
     title: item.title,
@@ -67,4 +67,25 @@ const transformItems = items => {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss">
+.ais-RefinementList-label {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  text-transform: lowercase;
+  cursor: pointer;
+}
+.ais-RefinementList-label > * {
+  display: inline-block;
+}
+.ais-RefinementList-label > .ais-RefinementList-checkbox {
+  margin-right: 6px;
+}
+.ais-RefinementList-label > .ais-RefinementList-labelText {
+  flex-grow: 1;
+}
+.ais-RefinementList-label > .ais-RefinementList-count {
+  padding: 0.01rem 0.4rem;
+  border-radius: 50%;
+}
+</style>
